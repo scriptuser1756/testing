@@ -6,7 +6,7 @@ local Tab = Window:NewTab("Главное")
 
 local Section = Tab:NewSection("лучшие")
 
-Section:NewButton("infinite yeild", "включает скрипт инфинити йелойд", function()
+Section:NewButton("infinite yield", "включает скрипт инфинити йелойд", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
 
