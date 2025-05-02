@@ -22,7 +22,7 @@ Section:NewButton("tool giver", "включает скрипт который в
     loadstring(game:HttpGet("https://raw.githubusercontent.com/yofriendfromschool1/Sky-Hub-Backup/main/gametoolgiver.lua"))()
 end)
 
-Section:NewButton("2 luck", "включает скрипт который выдает двойную удачу", function()
+Section:NewButton("x2 luck", "включает скрипт который выдает двойную удачу", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/GrinGuru/BloxFruits/refs/heads/main/2X%20LUCK"))()
 end)
 
