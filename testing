@@ -643,6 +643,6 @@ local Section = Tab:NewSection("а лиш скрипты которыми я п�
 local Tab = Window:NewTab("кридиты")
 
 local Section = Tab:NewSection("glupie_vanek - создатель, скриптер")
-local Section = Tab:NewSection("mayrushart323425 - гей, еблан, мой луший друк")
+local Section = Tab:NewSection("mayrushart323425 - еблан, мой луший друк")
 local Section = Tab:NewSection("STORM5993 - сосатель хуев")
 local Section = Tab:NewSection("я забыл💀")
