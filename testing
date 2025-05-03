@@ -276,6 +276,10 @@ Section:NewButton("murd VS sher", "включает скрипт на убийц
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BeanBotWare/FreakBob/refs/heads/main/FreakBob"))()
 end)
 
+Section:NewButton("dead rails", "включает скрипт на мертвые рельсы", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadRails"))()
+end)
+
 Section:NewButton("build a boat", "включает на построй всё что угодно кроме коробля и найди сокровище", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/suntisalts/BetaTesting/refs/heads/main/AutofarmV1.lua'))()
 end)
