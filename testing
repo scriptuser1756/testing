@@ -292,6 +292,10 @@ Section:NewButton("blox fruits", "включает скрипт на самую 
     loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua"))()
 end)
 
+Section:NewButton("симулятор падения в канаву", "включает скрипт на симулятор падения в канаву", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/BloxFruits/refs/heads/main/Source.lua"))()
+end)
+
 local Tab = Window:NewTab("только на пк")
 
 local Section = Tab:NewSection("лучшие")
