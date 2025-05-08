@@ -300,6 +300,663 @@ local Tab = Window:NewTab("только на пк")
 
 local Section = Tab:NewSection("лучшие")
 
+Section:NewButton("кольцо", "включает скрипт кольцо которое крутится вокруг тебя", function()
+getgenv().deletewhendupefound = true
+local lib = loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Lib-18698"))()
+lib.makelib("Destroyed. (2AreYouMental110)")
+local txtstuff = loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Text-to-Blocks-WIP-20736"))() 
+local t = lib.maketab("Main")
+local r = 0
+local localplr = game.Players.LocalPlayer
+local radiuscircle = Instance.new("Part")
+pcall(function()
+    sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",r)
+end)
+lib.makeslider("Pick Up Radius (more radius = more lag)",t,0,2000,function(n)
+    r = n
+    sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",r)
+    --radiuscircle.Size = Vector3.new(r,r,r)
+end)
+radiuscircle.Shape = Enum.PartType.Ball
+radiuscircle.Size = Vector3.new(r,r,r)
+radiuscircle.CanCollide = false
+radiuscircle.Transparency = 1
+radiuscircle.Anchored = true
+radiuscircle.Parent = workspace
+local networkown = {}
+local boolz = {}
+local connected = {}
+local attemptfling = {}
+local cb = nil
+local rs = 10
+local ts = 10
+local ss = 1
+local every5 = 0
+local tofling = {}
+local ps = game:GetService("PhysicsService")
+local cgs = {}
+local noclippedrigs = {}
+local noclipped = false
+local currcg = "Default"
+if not DEADRAILS then
+	localplr.ReplicationFocus = workspace
+end
+if localplr.Character and localplr.Character:FindFirstChild("HumanoidRootPart") then
+    currcg = localplr.Character.HumanoidRootPart.CollisionGroup
+elseif not localplr.Character then
+    coroutine.wrap(function()
+        local c = localplr.CharacterAdded:Wait()
+        local hrp = c:WaitForChild("HumanoidRootPart",math.huge)
+        currcg = hrp.CollisionGroup
+    end)()
+elseif localplr.Character and not localplr.Character:FindFirstChild("HumanoidRootPart") then
+    local hrp = localplr.Character:FindFirstChildWhichIsA("Part")
+    if hrp then
+        currcg = hrp.CollisionGroup
+    end
+end
+function retain(part) -- sorry yumm
+    local rt = {part.CanCollide,part.CanTouch,part.CustomPhysicalProperties,part.CollisionGroup or "Default"}
+    part.CustomPhysicalProperties = PhysicalProperties.new(0.01,0,0,0,0)
+    part.CanCollide = false
+    part.CanTouch = false
+    return rt
+end
+function unretain(i,w)
+    local gg = networkown[i]
+    networkown[i] = nil
+    if gg then
+    --[[if cgs[i.CollisionGroup] then
+        cgs[i.CollisionGroup][i] = nil
+        if #cgs[i.CollisionGroup] == 0 then
+            cgs[i.CollisionGroup] = nil
+            ps:CollisionGroupSetCollidable(p.CollisionGroup,currcg,gg[5]) -- i said gg 5 times
+        end
+    end]]
+        i.CollisionGroup = gg[5] -- i said gg 5 times
+        i.CustomPhysicalProperties = gg[4]
+        --task.wait(w or 3)
+        i.CanCollide = gg[2]
+        i.CanTouch = gg[3]
+    end
+    if connected[i] then
+        if connected[i][1] then
+            connected[i][1]:Disconnect()
+        end
+        if connected[i][2] then
+            connected[i][2]:Disconnect()
+        end
+        connected[i] = nil
+    end
+    if noclippedrigs[i.Parent] then
+        noclippedrigs[i.Parent] = nil
+    end
+end
+function dopart2(v)
+    if localplr.Character and not v:IsDescendantOf(localplr.Character) then
+        local stuff = retain(v)
+        networkown[v] = {math.random(1,10000000)/100000,stuff[1],stuff[2],stuff[3],stuff[4]}
+    end
+end
+local goodwelds = {}
+local currpath = {}
+function gdp(p)
+    local unanchored = not p:IsGrounded()
+    --[[if not cgs[p.CollisionGroup] then
+        cgs[p.CollisionGroup] = {}
+        ps:CollisionGroupSetCollidable(p.CollisionGroup,currcg,false)
+    end
+    cgs[p.CollisionGroup][v] = unanchored
+    p.CollisionGroup = "uudbebxjaudvehxyejchs"..tostring(math.random(1,100000000))]]
+    return unanchored
+    --[[ i literally did all this code just to realize GetConnectedParts was a thing.. THIS TOOK ME 3 DAYS
+    if w.Enabled == false then return true end
+    if w.Part0 == nil or w.Part1 == nil then return true end
+    print(w.Part0:GetFullName(),w.Part1:GetFullName())
+    print(currpath[w.Part0],currpath[w.Part1])
+    if w.Part0 ~= w.Parent and currpath[w.Part0] then
+        return true
+    end
+    if w.Part1 ~= w.Parent and currpath[w.Part1] then
+        return true
+    end
+    if w.Part0.Anchored == false and w.Part1.Anchored == false then -- if both are unanchored
+        local noweld = true
+        if w.Part0:FindFirstChildWhichIsA("Weld") then
+            currpath[w.Part0] = true
+            local gdp2 = gdp(w.Part0:FindFirstChildWhichIsA("Weld"))
+            if gdp2 == true then
+                return true
+            end
+            noweld = false
+        end
+        if w.Part1:FindFirstChildWhichIsA("Weld") then
+            currpath[w.Part1] = true
+            local gdp2 = gdp(w.Part1:FindFirstChildWhichIsA("Weld"))
+            if gdp2 == true then
+                return true
+            end
+            noweld = false
+        end
+        if noweld then
+            return true
+        end
+    else
+        return false
+    end
+    return false
+    ]]
+end
+function checkweld(p)
+    return goodwelds[p]
+end
+function doweld(w,p)
+    table.insert(connected,w:GetPropertyChangedSignal("Part0"):Connect(function()
+        goodwelds[p] = gdp(p)
+    end))
+    table.insert(connected,w:GetPropertyChangedSignal("Part1"):Connect(function()
+        goodwelds[p] = gdp(p)
+    end))
+end
+table.insert(connected,game:GetService("RunService").Stepped:Connect(function()
+    for v,i in pairs(noclippedrigs) do
+        if i == true and v and v:FindFirstChildWhichIsA("Humanoid") then
+            for i2,v2 in pairs(v:GetDescendants()) do
+                if v2:IsA("BasePart") then
+                    v2.CanCollide = false
+                end
+            end
+        end
+    end
+end))
+function dopart(v)
+	if v:IsA("BasePart") or v:IsA("UnionOperation") then
+	    for i2,v2 in pairs(game.Players:GetPlayers()) do
+	        if v2.Character and v:IsDescendantOf(v2.Character) then
+	            return
+	        end
+	    end
+        goodwelds[v] = gdp(v)
+        if v:FindFirstChildWhichIsA("Weld") then
+            doweld(v:FindFirstChildWhichIsA("Weld"),v)
+        end
+        table.insert(connected,v.ChildAdded:Connect(function(w)
+            if w:IsA("Weld") then
+                doweld(w,v)
+            end
+        end))
+        if (v.Parent and game.Players:GetPlayerFromCharacter(v.Parent) == nil) and v.Parent:FindFirstChildWhichIsA("Humanoid") and (noclippedrigs[v.Parent] == nil) then
+            local cont = true
+            for i,v in pairs(v.Parent:GetDescendants()) do
+                if v:IsA("BasePart") and v.Anchored == true then
+                    cont = false
+                end
+            end
+            if cont then
+                noclippedrigs[v.Parent] = true
+            else
+                noclippedrigs[v.Parent] = false
+            end
+        end
+	    if v.Anchored == false and not networkown[v] and checkweld(v) == true then
+	        dopart2(v)
+	    end
+    	table.insert(connected,v:GetPropertyChangedSignal("Anchored"):Connect(function()
+    		if v.Anchored == false and not networkown[v] and checkweld(v) == true then
+    		    dopart2(v)
+    		elseif (v.Anchored == true and networkown[v]) or checkweld(v) == false then
+    		    unretain(v)
+    		end
+    	end))
+    	--[[table.insert(connected,v:GetPropertyChangedSignal("CanCollide"):Connect(function()
+    		if v and v.CanCollide == true and networkown[v] then
+    		    print("change?")
+    		    v.CanCollide = false
+    		end
+    	end))]]
+    end
+end
+for i,v in pairs(workspace:GetDescendants()) do
+	dopart(v)
+end
+workspace.DescendantAdded:Connect(function(v)
+	dopart(v)
+end)
+local ldi = nil
+local uptxt = nil
+local partsper = nil
+local aop = 0
+local autoupdtxt = false
+local ctxt = nil
+local txtcfr = nil
+local display = nil
+local ucf = false
+local txts = 4
+function updatetxt(t,dupd,nocheck)
+    if ((txtcfr and (game.Players.LocalPlayer.Character:GetPivot().Position - txtcfr.Position).Magnitude > 1) or not txtcfr) or nocheck then
+    if display then
+        deletedisplay(display)
+        display = nil
+    end
+    local blocks = txtstuff.getblocks(t)
+    if not dupd then
+        txtcfr = game.Players.LocalPlayer.Character:GetPivot()
+    end
+    local displayid,pttable,cfrtable = txtstuff.displayblocks(blocks,txtcfr,txts,true,txts,5,0,false,Enum.Material.ForceField)
+    display = displayid
+    local newuptxt = {}
+    aop = 0
+    local changed = false
+    for i,v in pairs(cfrtable) do
+        if not newuptxt[v.Position.X] then
+            newuptxt[v.Position.X] = {}
+        end
+        if not newuptxt[v.Position.X][v.Position.Y] then
+            newuptxt[v.Position.X][v.Position.Y] = {}
+        end
+        newuptxt[v.Position.X][v.Position.Y][v.Position.Z] = {-1,{}}
+        aop = aop + 1
+    end
+    uptxt = newuptxt
+    end
+end
+local pucf = nil
+local ohb = game:GetService("RunService").Heartbeat:Connect(function(t)
+    local doit = false
+    for i,v in pairs(boolz) do
+        if v == true then
+            doit = true
+        end
+    end
+    if localplr.Character and doit then
+        if ldi ~= doit then
+            for i,v in pairs(workspace:GetDescendants()) do
+            	dopart(v)
+            end
+        end
+        if ctxt and txtcfr and autoupdtxt then
+            updatetxt(ctxt)
+        end
+        local mcfr = localplr.Character:GetPivot()
+        local mpos = mcfr.Position
+        local nwo = 0
+        for i,v in pairs(networkown) do
+            nwo = nwo + 1
+        end
+        for i,v in pairs(networkown) do
+            if not i then
+                networkown[i] = nil
+            else
+                networkown[i][1] = networkown[i][1]+(t*ss)
+                local bp = nil
+                if not i:FindFirstChild("bp") then
+                    local m = i:GetMass()
+                    bp = Instance.new("BodyPosition")
+                    bp.Name = "bp"
+                    bp.P = m/0.64e-5
+                    bp.D = m/0.64e-3
+                    bp.MaxForce = Vector3.new(m/0.64e-6,m/0.64e-6,m/0.64e-6)
+                    bp.Parent = i
+                else
+                    bp = i:FindFirstChild("bp")
+                end
+                --[[local bgr = nil
+                if not i:FindFirstChild("bgr") then
+                    bgr = Instance.new("BodyVelocity")
+                    bgr.Name = "bgr"
+                    bgr.P = 1e4
+                    bgr.MaxForce = Vector3.new(1e4,1e4,1e4)
+                    bgr.Velocity = Vector3.new(1e4,1e4,1e4)
+                    bgr.Parent = i
+                else
+                    bgr = i:FindFirstChild("bgr")
+                end
+                ]]
+                if cb then
+                    if cb == "cof" then
+                        bp.Position = (mcfr * CFrame.new(0,0,-5)).Position
+                    elseif cb == "ring" then
+                        bp.Position = ((CFrame.new(mpos) * CFrame.Angles(0,v[1]*ss,0)) * CFrame.new(0,0,-rs)).Position
+                    elseif cb == "tornado" then
+                        bp.Position = ((CFrame.new(mpos) * CFrame.Angles(0,v[1]*ss,0)) * CFrame.new(0,v[1]%(ts)-6,-ts+math.random(ts))).Position
+                    elseif cb == "fp" then
+                        local plrtofling = nil
+                        for i2,v2 in pairs(tofling) do
+                            if v2[1] ~= nil and v2[2] == true then
+                                if attemptfling[v2[1]] and attemptfling[v2[1]][2] == i and v2[1].Character then
+                                    plrtofling = v2[1]
+                                    break
+                                elseif attemptfling[v2[1]] and attemptfling[v2[1]][2] == i  and not v2[1].Character then
+                                    attemptfling[v2[1]] = nil
+                                end
+                                if v2[1] ~= localplr and v2[1].Character and not attemptfling[v2[1]] and (v2[1].Character:GetPivot().Position - mpos).Magnitude <= r then
+                                    attemptfling[v2[1]] = {tick()+5,i}
+                                    plrtofling = v2[1]
+                                    break
+                                elseif v2[1] ~= localplr and v2[1].Character and attemptfling[v2[1]] and (attemptfling[v2[1]][1] < tick() or (v2[1].Character:FindFirstChild("HumanoidRootPart") and v2[1].Character.HumanoidRootPart.Velocity.Magnitude >= 500)) then
+                                    attemptfling[v2[1]] = nil
+                                end
+                            end
+                        end
+                        if plrtofling and plrtofling ~= nil then
+                           local cfr = plrtofling.Character:GetPivot()
+                           bp.Position = (cfr * CFrame.new(0,0,math.random(-15,15))).Position
+                        else
+                            bp.Position = i.Position
+                        end
+                    elseif cb == "txt" and uptxt and aop then
+                        partsper = nwo/aop
+                        partsper = math.floor(partsper)
+                        if partsper < 1 then
+                            partsper = 1
+                        end
+                        local fp = false
+                        for x,v in pairs(uptxt) do
+                            for y,v in pairs(v) do
+                                for z,v in pairs(v) do
+                                    if v[1] == -1 then
+                                        v[1] = partsper
+                                    end
+                                    if not v[2][i] and v[1] >= 1 then
+                                        v[1] = v[1] - 1
+                                        v[2][i] = true
+                                        bp.Position = Vector3.new(x,y,z)
+                                        fp = true
+                                        break
+                                    elseif v[2][i] then
+                                        bp.Position = Vector3.new(x,y,z)
+                                        fp = true
+                                        break
+                                    end
+                                end
+                                if fp then break end
+                            end
+                            if fp then break end
+                        end
+                        if not fp then
+                            bp.Position = (mcfr * CFrame.new(0,0,-5)).Position
+                        end
+                    end
+                else
+                    bp.Position = (mcfr * CFrame.new(0,0,-5)).Position
+                end
+                networkown[i][6] = bp.Position
+                if pucf == true and ucf == false then
+                    coroutine.wrap(function()
+                        for i2=1,20 do
+                            task.wait()
+                            i.Velocity = Vector3.new(0,0,0)
+                            i.CFrame = CFrame.new(bp.Position)
+                        end
+                    end)()
+                end
+                if ucf then
+                    i.Velocity = Vector3.new(9e9,9e9,9e9)
+                    i.CFrame = CFrame.new(bp.Position)
+                end
+            end
+        end
+    elseif not doit then
+        noclipped = true
+        for i,v in pairs(networkown) do
+            if i:FindFirstChild("bp") then
+                i.bp:Destroy()
+            end
+            if i:FindFirstChild("bgr") then
+                i.bgr:Destroy()
+            end
+            coroutine.wrap(function()
+                i.Velocity = Vector3.new(0,0,0)
+                for i2=1,20 do
+                    task.wait()
+                    if v[6] and ucf then
+                        i.Velocity = Vector3.new(0,0,0)
+                        i.CFrame = CFrame.new(v[6])
+                    end
+                end
+                task.wait(.25)
+                noclipped = false
+            end)()
+            coroutine.wrap(function()
+                unretain(i)
+            end)()
+        end
+    end
+    pcall(function()
+        sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",r)
+    end)
+    ldi = doit
+    pucf = ucf
+end)
+table.insert(connected,localplr.CharacterAdded:Connect(function(char)
+    if noclipped == true then
+        noclippedrigs[localplr.Character] = noclipped
+    end
+end))
+lib.makeslider("speed",t,0,10,function(n)
+    ss = n
+end)
+lib.makeslider("speed (larger)",t,10,100,function(n)
+    ss = n
+end)
+lib.maketoggle("Use CFrame (VERY buggy)",t,function(b)
+    ucf = b
+end)
+lib.makelabel("Using CFrame will make the parts instantly goto the spot and have a way more powerful fling, but there will be some or more parts other players don't actually see. (for example, if you see ingame players it might not actually be them.)",t)
+lib.maketoggle("Noclip (for parts with collision)",t,function(b)
+    noclipped = b
+    noclippedrigs[localplr.Character] = noclipped
+end)
+lib.makelabel("",t)
+lib.maketoggle("parts of fling",t,function(b)
+    boolz["cof"] = b
+    if b then
+        cb = "cof"
+    else
+        for i,v in pairs(boolz) do
+            if v then
+                cb = i
+                break
+            end
+        end
+    end
+end)
+lib.makelabel("",t)
+lib.maketoggle("ring of parts",t,function(b)
+    boolz["ring"] = b
+    if b then
+        cb = "ring"
+    else
+        for i,v in pairs(boolz) do
+            if v then
+                cb = i
+                break
+            end
+        end
+    end
+end)
+lib.makeslider("ring size",t,0,150,function(n)
+    rs = n
+end)
+lib.makelabel("",t)
+lib.maketoggle("tornado of parts (kinda)",t,function(b)
+    boolz["tornado"] = b
+    if b then
+        cb = "tornado"
+    else
+        for i,v in pairs(boolz) do
+            if v then
+                cb = i
+                break
+            end
+        end
+    end
+end)
+lib.makeslider("tornado size",t,0,100,function(n)
+    ts = n
+end)
+lib.makelabel("",t)
+lib.makeslider("text size",t,0,50,function(n)
+    txts = n
+    if ctxt and txtcfr then
+        updatetxt(ctxt,true,true)
+    end
+end)
+lib.maketextbox("enter text",t,function(t)
+    ctxt = t
+    updatetxt(t,nil,true)
+end)
+lib.maketoggle("make parts into text",t,function(b)
+    boolz["txt"] = b
+    if b then
+        cb = "txt"
+        updatetxt(ctxt,nil,true)
+    else
+        if display then
+            deletedisplay(display)
+            display = nil
+        end
+        for i,v in pairs(boolz) do
+            if v then
+                cb = i
+                break
+            end
+        end
+    end
+end)
+lib.maketoggle("auto update text positions",t,function(b)
+    autoupdtxt = b
+end)
+lib.makelabel("",t)
+lib.maketoggle("fling people",t,function(b)
+    boolz["fp"] = b
+    if b then
+        cb = "fp"
+    else
+        for i,v in pairs(boolz) do
+            if v then
+                cb = i
+                break
+            end
+        end
+    end
+end)
+lib.makelabel("select people to fling")
+local currplrs = {}
+local onlyallbut = true
+local allbut = lib.makedropdown("select everyone but the player",t,{},function(n)
+    for i,v in pairs(tofling) do
+        if i ~= n then
+            tofling[i] = {v[1] or nil,true,v[3] or nil}
+            if v[3] then
+                v[3].BackgroundColor3 = Color3.fromRGB(0,255,0)
+            end
+        else
+            tofling[i] = {v[1] or nil,false,v[3] or nil}
+            if v[3] then
+                v[3].BackgroundColor3 = Color3.fromRGB(255,0,0)
+            end
+        end
+    end
+    onlyallbut = true
+end)
+local only = lib.makedropdown("select only the player",t,{},function(n)
+    for i,v in pairs(tofling) do
+        if i == n then
+            tofling[i] = {v[1] or nil,true,v[3] or nil}
+            if v[3] then
+                v[3].BackgroundColor3 = Color3.fromRGB(0,255,0)
+            end
+        else
+            tofling[i] = {v[1] or nil,false,v[3] or nil}
+            if v[3] then
+                v[3].BackgroundColor3 = Color3.fromRGB(255,0,0)
+            end
+        end
+    end
+    onlyallbut = false
+end)
+function doplr(v)
+    if v == localplr then return end
+    local name = v.DisplayName
+    if name ~= v.Name then
+        name = v.DisplayName.." | "..v.Name
+    end
+    local tog = nil
+    local onoff = onlyallbut
+    tog = lib.makebutton(name,t,function()
+        onoff = not onoff
+        tofling[v.Name] = {v,onoff,tog}
+        if onoff then
+            tog.BackgroundColor3 = Color3.fromRGB(0,255,0)
+        else
+            tog.BackgroundColor3 = Color3.fromRGB(255,0,0)
+        end
+    end)
+    if onoff then
+        tog.BackgroundColor3 = Color3.fromRGB(0,255,0)
+    else
+        tog.BackgroundColor3 = Color3.fromRGB(255,0,0)
+    end
+    tog.BackgroundTransparency = 0.5
+    tofling[v.Name] = {v,onoff,tog}
+    currplrs[v.Name] = v.Name
+    lib.updatedropdown(allbut,currplrs)
+    lib.updatedropdown(only,currplrs)
+end
+function removeplr(v)
+    if v and tofling[v.Name] then
+        tofling[v.Name][3]:Destroy()
+        tofling[v.Name] = {v,false}
+    end
+    currplrs[v.Name] = nil
+    lib.updatedropdown(allbut,currplrs)
+    lib.updatedropdown(only,currplrs)
+end
+for i,v in pairs(game.Players:GetPlayers()) do
+    doplr(v)
+end
+local onplrjoin = game.Players.PlayerAdded:Connect(function(v)
+    doplr(v)
+end)
+local onplrleave = game.Players.PlayerRemoving:Connect(function(v)
+    removeplr(v)
+end)
+lib.ondestroyedfunc = function()
+    ohb:Disconnect()
+    cb = nil
+    boolz = {}
+    noclipped = false
+    if display then
+        deletedisplay(display)
+        display = nil
+    end
+    for i,v in pairs(networkown) do
+            if i:FindFirstChild("bp") then
+                i.bp:Destroy()
+            end
+            if i:FindFirstChild("bgr") then
+                i.bgr:Destroy()
+            end
+            coroutine.wrap(function()
+                unretain(i)
+            end)()
+    end
+	for i,v in pairs(connected) do
+	    if typeof(v) == "table" then
+	        for i,v in pairs(v) do
+	            v:Disconnect()
+	        end
+	    else
+		    v:Disconnect()
+		end
+	end
+    tofling = {}
+    onplrjoin:Disconnect()
+    onplrleave:Disconnect()
+end
+end)
+
 Section:NewButton("telekinesis", "включает скрипт на телекинез (передвигать предметы курсором брать левой кнопкой мыши)", function()
     local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
