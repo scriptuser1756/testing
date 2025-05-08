@@ -1337,9 +1337,10 @@ local Tab = Window:NewTab("!ПРИМИЧАНИЯ!")
 local Section = Tab:NewSection("в данном хабе собраны не мои личные скрипты")
 local Section = Tab:NewSection("а лиш скрипты которыми я пользуюсь или пользовался")
 
-local Tab = Window:NewTab("кридиты")
+local Tab = Window:NewTab("кредиты")
 
 local Section = Tab:NewSection("glupie_vanek - создатель, скриптер")
+local Section = Tab:NewSection("kopiloikomik2 - второй аккаунт")
 local Section = Tab:NewSection("mayrushart323425 - еблан, мой луший друк")
 local Section = Tab:NewSection("STORM5993 - сосатель хуев")
 local Section = Tab:NewSection("я забыл💀")
