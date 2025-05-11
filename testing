@@ -1,7 +1,5 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Robojini/Tuturial_UI_Library/main/UI_Template_1"))()
 
-sendChatMessage("skibidi hub by dane4ka.is.me (tt)")
-
 local Window = Library.CreateLib("skibidi hub", "RJTheme3")
 
 local Tab = Window:NewTab("Главное")
