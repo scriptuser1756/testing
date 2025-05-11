@@ -1332,12 +1332,6 @@ Section:NewButton("клавиатура", "включает скрипт на к
     loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/uuuuuuu/refs/heads/main/VirtualKeyboard.lua"))()
 end)
 
-local Tab = Window:NewTab("мои лично созданые скрипты")
-
-local Section = Tab:NewSection("пока тут нечего нету")
-local Section = Tab:NewSection("но вы можете писать свои идеи на моем")
-local Section = Tab:NewSection("тт канале:dane4ka.is.me")
-
 local Tab = Window:NewTab("!ПРИМИЧАНИЯ!")
 
 local Section = Tab:NewSection("в данном хабе собраны не мои личные скрипты")
